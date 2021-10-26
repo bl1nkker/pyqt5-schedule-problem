@@ -91,15 +91,25 @@ class Class:
 
 class Data:
     # This needs to retrieve from form (PyQT5)
-    ROOMS = [['R1', 25], ['R2', 45], ['R3', 35]]
+    # ROOMS = [['R1', 25], ['R2', 45], ['R3', 35]]
+    # MEETING_TIMES = [['MT1', 'MWF 09:00 - 10:00'],
+    #                  ['MT2', 'MWF 10:00 - 11:00'],
+    #                  ['MT3', 'TTH 09:00 - 10:30'],
+    #                  ['MT4', 'TTH 10:30 - 12:00']]
+    # INSTRUCTORS = [['I1', 'Dr James Web'],
+    #                ['I2', 'Mr Mike Brown'],
+    #                ['I3', 'Dr Steve Day'],
+    #                ['I4', 'Mrs Jane Doe']]
+
+    ROOMS = [['401a', 25], ['324', 45], ['325', 35]]
     MEETING_TIMES = [['MT1', 'MWF 09:00 - 10:00'],
                      ['MT2', 'MWF 10:00 - 11:00'],
                      ['MT3', 'TTH 09:00 - 10:30'],
                      ['MT4', 'TTH 10:30 - 12:00']]
-    INSTRUCTORS = [['I1', 'Dr James Web'],
-                   ['I2', 'Mr Mike Brown'],
-                   ['I3', 'Dr Steve Day'],
-                   ['I4', 'Mrs Jane Doe']]
+    INSTRUCTORS = [['I1', 'Нурлан Иманмаликович'],
+                   ['I2', 'Адик'],
+                   ['I3', 'Измуханова'],
+                   ['I4', 'Кирилл']]
 
     def __init__(self):
         self.rooms = []
@@ -119,20 +129,32 @@ class Data:
             self.meeting_times.append(new_meeting_times)
 
         # Create courses (number, name, instructors, max_num_of_student)
-        course1 = Course('C1', '325K', [self.instructors[0], self.instructors[1]], 25)
-        course2 = Course('C2', '319K', [self.instructors[0], self.instructors[1], self.instructors[2]], 35)
-        course3 = Course('C3', '462k', [self.instructors[0], self.instructors[1]], 25)
-        course4 = Course('C4', '464K', [self.instructors[2], self.instructors[3]], 35)
-        course5 = Course('C5', '360C', [self.instructors[3]], 35)
-        course6 = Course('C6', '303K', [self.instructors[0], self.instructors[2]], 45)
-        course7 = Course('C7', '303L', [self.instructors[1], self.instructors[3]], 45)
+        # course1 = Course('C1', '325K', [self.instructors[0], self.instructors[1]], 25)
+        # course2 = Course('C2', '319K', [self.instructors[0], self.instructors[1], self.instructors[2]], 35)
+        # course3 = Course('C3', '462k', [self.instructors[0], self.instructors[1]], 25)
+        # course4 = Course('C4', '464K', [self.instructors[2], self.instructors[3]], 35)
+        # course5 = Course('C5', '360C', [self.instructors[3]], 35)
+        # course6 = Course('C6', '303K', [self.instructors[0], self.instructors[2]], 45)
+        # course7 = Course('C7', '303L', [self.instructors[1], self.instructors[3]], 45)
+
+        course1 = Course('SEM', '325K', [self.instructors[0], self.instructors[1]], 25)
+        course2 = Course('SoL', '319K', [self.instructors[0], self.instructors[1], self.instructors[2]], 35)
+        course3 = Course('LLO', '462k', [self.instructors[0], self.instructors[1]], 25)
+        course4 = Course('SoL', '464K', [self.instructors[2], self.instructors[3]], 35)
+        course5 = Course('SoM', '360C', [self.instructors[3]], 35)
+        course6 = Course('SSE', '303K', [self.instructors[0], self.instructors[2]], 45)
+        course7 = Course('MMK', '303L', [self.instructors[1], self.instructors[3]], 45)
 
         self.courses = [course1, course2, course3, course4, course5, course6, course7]
 
         # Create Departments (name, courses)
-        dept1 = Department('MATH', [course1, course3])
-        dept2 = Department('MATH', [course2, course4, course5])
-        dept3 = Department('MATH', [course6, course7])
+        # dept1 = Department('MATH', [course1, course3])
+        # dept2 = Department('MATH', [course2, course4, course5])
+        # dept3 = Department('MATH', [course6, course7])
+
+        dept1 = Department('Data Science', [course1, course3])
+        dept2 = Department('Game Development', [course2, course4, course5])
+        dept3 = Department('Web/Mobile Development', [course6, course7])
 
         self.depts = [dept1, dept2, dept3]
         # Sum of courses, ex: [2,3,2] = 7
