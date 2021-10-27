@@ -1,5 +1,6 @@
 import random
 import prettytable
+import math
 
 # Helper Classes
 from sp_course import Course
@@ -13,6 +14,10 @@ POPULATION_SIZE = 9
 NUMB_OF_ELITE_SCHEDULES = 1
 TOURNAMENT_SELECTION_SIZE = 3
 MUTATION_RATE = .1
+# Annealing Method Constants
+TEMPERATURE = 100
+ALPHA = 0.99
+E = math.e
 
 
 # Classes consists of Instructor, Meeting Time, Department, Course and Room
@@ -84,6 +89,7 @@ class Schedule:
             # Check, if max_num_of_students in the course, fits the room
             if current_class_1.get_room().get_seating_capacity() < current_class_1.get_course().get_max_num_of_students():
                 # if not, conflicts +1
+                print('Fucked up with the seating capacity')
                 self.number_of_conflicts += 1
             for class_index_2 in range(len(classes)):
                 current_class_2: Class = classes[class_index_2]
@@ -122,7 +128,7 @@ class Schedule:
                 # Set initialize data, Random of the list
                 new_class.set_meeting_time(data.get_meeting_times()[random.randrange(0, len(data.get_meeting_times()))])
                 new_class.set_room(data.get_rooms()[random.randrange(0, len(data.get_rooms()))])
-                new_class.set_instructor(data.get_instructors()[random.randrange(0, len(data.get_instructors()))])
+                new_class.set_instructor(new_class.get_course().get_instructor()[random.randrange(0, len(new_class.get_course().get_instructor()))])
                 self.classes.append(new_class)
         return self
 
@@ -176,13 +182,13 @@ class Data:
         # course6 = Course('C6', '303K', [self.instructors[0], self.instructors[2]], 45)
         # course7 = Course('C7', '303L', [self.instructors[1], self.instructors[3]], 45)
 
-        course1 = Course('SEM', '325K', [self.instructors[0], self.instructors[1]], 25)
-        course2 = Course('SoL', '319K', [self.instructors[0], self.instructors[1], self.instructors[2]], 35)
-        course3 = Course('LLO', '462k', [self.instructors[0], self.instructors[1]], 25)
-        course4 = Course('SoL', '464K', [self.instructors[2], self.instructors[3]], 35)
-        course5 = Course('SoM', '360C', [self.instructors[3]], 35)
-        course6 = Course('SSE', '303K', [self.instructors[0], self.instructors[2]], 45)
-        course7 = Course('MMK', '303L', [self.instructors[1], self.instructors[3]], 45)
+        course1 = Course('English', '325K', [self.instructors[0], self.instructors[1]], 25)
+        course2 = Course('Math', '319K', [self.instructors[0], self.instructors[1], self.instructors[2]], 35)
+        course3 = Course('History', '462k', [self.instructors[0], self.instructors[1]], 25)
+        course4 = Course('PE', '464K', [self.instructors[2], self.instructors[3]], 35)
+        course5 = Course('Computer Science', '360C', [self.instructors[3]], 35)
+        course6 = Course('Game Development', '303K', [self.instructors[0], self.instructors[2]], 45)
+        course7 = Course('Web Development', '303L', [self.instructors[1], self.instructors[3]], 45)
 
         self.courses = [course1, course2, course3, course4, course5, course6, course7]
 
@@ -191,9 +197,9 @@ class Data:
         # dept2 = Department('MATH', [course2, course4, course5])
         # dept3 = Department('MATH', [course6, course7])
 
-        dept1 = Department('Data Science', [course1, course3])
-        dept2 = Department('Game Development', [course2, course4, course5])
-        dept3 = Department('Web/Mobile Development', [course6, course7])
+        dept1 = Department('SEM', [course1, course3])
+        dept2 = Department('SoM', [course2, course4, course5])
+        dept3 = Department('SOL', [course6, course7])
 
         self.depts = [dept1, dept2, dept3]
         # Sum of courses, ex: [2,3,2] = 7
@@ -286,6 +292,42 @@ class GeneticAlgorithm:
         return tournament_pop
 
 
+# Simulated Annealing
+class SimulatedAnneling:
+    def mutate_schedule(self, current_schedule: Schedule) -> Schedule:
+        # Randomly mutate one class in the schedule
+        updated_schedule = current_schedule
+        updated_schedule.get_classes()
+        random_class_index = random.randint(0,len(updated_schedule.get_classes()) - 1)
+        # Расписание = []
+        new_class = Class(random_class_index, data.get_depts()[random.randint(0, len(data.get_depts()) - 1)],
+                          data.get_courses()[random.randint(0, len(data.get_courses()) - 1)])
+        new_class.set_meeting_time(data.get_meeting_times()[random.randrange(0, len(data.get_meeting_times()))])
+        new_class.set_room(data.get_rooms()[random.randrange(0, len(data.get_rooms()))])
+        new_class.set_instructor(
+            new_class.get_course().get_instructor()[random.randrange(0, len(new_class.get_course().get_instructor()))])
+        updated_schedule.get_classes()[random_class_index] = new_class
+        return updated_schedule
+
+    def probability_am(self, current_schedule:Schedule, update_schedule:Schedule) -> Schedule:
+        random_num = random.randint(0, 100)
+        # {1 ; 0} = 0.1, 0.2
+        # .1 - .5 = .4
+        # .5 - .1 = -.4
+        difference = (update_schedule.get_fitness() - current_schedule.get_fitness()) * 10
+        # if difference positive -> updated_schedule is worst than current_schedule, so there will be less chance
+        # 100 * 2.7^(-.4/100) = 97.0642017039
+        # 100 * 2.7^(-.4/1) = 5.08052634253
+        # else
+        # 100 * 2.7^(3 / 100) = 103.024594284
+        # 100 * 2.7^(3 / 1) = 1968.3
+        chance = 100 * E ** (-(difference / TEMPERATURE))
+        if random_num < chance:
+            return update_schedule
+        else:
+            return current_schedule
+
+
 # Display Manager
 class DisplayManager(object):
     def print_available_data(self):
@@ -375,17 +417,33 @@ data = Data()
 display_manager = DisplayManager()
 display_manager.print_available_data()
 generation_number = 0
+
+# Genetic Algorithm
 print(f'\n> Generation # {generation_number}')
 pp = Population(POPULATION_SIZE)
 pp.get_schedules().sort(key=lambda x: x.get_fitness(), reverse=True)
 display_manager.print_generation(pp)
 display_manager.print_schedule_as_table(pp.get_schedules()[0])
+
+display_manager.print_schedule_as_table(pp.get_schedules()[0])
 genetic_algo = GeneticAlgorithm()
-# Algorithm
-while pp.get_schedules()[0].get_fitness() != 1.0:
+# while pp.get_schedules()[0].get_fitness() != 1.0:
+#
+#     generation_number += 1
+#     print(f'\n>Generation # {str(generation_number)}')
+#     pp = genetic_algo.evolve(pp)
+#     pp.get_schedules().sort(key=lambda x: x.get_fitness(), reverse=True)
+#     display_manager.print_generation(pp)
+#     display_manager.print_schedule_as_table(pp.get_schedules()[0])
+
+# Annealing Method
+cur_schedule = Schedule().initialize()
+simulated_ann = SimulatedAnneling()
+
+while cur_schedule.get_fitness() != 1.0:
     generation_number += 1
-    print(f'\n>Generation # {str(generation_number)}')
-    pp = genetic_algo.evolve(pp)
-    pp.get_schedules().sort(key=lambda x: x.get_fitness(), reverse=True)
-    display_manager.print_generation(pp)
-    display_manager.print_schedule_as_table(pp.get_schedules()[0])
+    new_schedule = simulated_ann.mutate_schedule(cur_schedule)
+    cur_schedule = simulated_ann.probability_am(cur_schedule, new_schedule)
+    TEMPERATURE *= ALPHA
+    print(f'\n>Generation # {str(generation_number)}, with fitness: {cur_schedule.get_fitness()}')
+    display_manager.print_schedule_as_table(cur_schedule)
