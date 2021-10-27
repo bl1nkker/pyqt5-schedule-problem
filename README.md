@@ -1,1 +1,1 @@
-Schedule Problem using Genetic Algo/Annealing Method and PyQT5(UI)
+Schedule Problem using Genetic Algo/Simulated Annealing Method and PyQT5(UI)
