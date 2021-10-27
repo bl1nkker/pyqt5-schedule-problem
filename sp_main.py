@@ -1,61 +1,21 @@
 import random
 import prettytable
 
+# Helper Classes
+from sp_course import Course
+from sp_room import Room
+from sp_meeting_time import MeetingTime
+from sp_department import Department
+from sp_instructor import Instructor
+
+# Genetic Algo Constants
 POPULATION_SIZE = 9
+NUMB_OF_ELITE_SCHEDULES = 1
+TOURNAMENT_SELECTION_SIZE = 3
+MUTATION_RATE = .1
 
 
-class Course:
-    def __init__(self, number, name, instructor, max_num_of_student) -> None:
-        self.number = number
-        self.name = name
-        self.instructor = instructor
-        self.max_num_of_student = max_num_of_student
-
-    def get_number(self): return self.number
-
-    def get_name(self): return self.name
-
-    def get_instructor(self): return self.instructor
-
-    def get_max_num_of_students(self): return self.max_num_of_student
-
-    def __str__(self) -> str: return self.name
-
-
-class Instructor:
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-
-    def get_id(self): return self.id
-
-    def get_name(self): return self.name
-
-    def __str__(self): return self.name
-
-
-class Room:
-    # Class Room
-    def __init__(self, number, seating_capacity):
-        self.number = number
-        self.seating_capacity = seating_capacity
-
-    def get_number(self): return self.number
-
-    def get_seating_capacity(self): return self.seating_capacity
-
-
-class MeetingTime:
-    # Meeting Time
-    def __init__(self, id, time):
-        self.id = id
-        self.time = time
-
-    def get_id(self): return self.id
-
-    def get_time(self): return self.time
-
-
+# Classes consists of Instructor, Meeting Time, Department, Course and Room
 class Class:
     # Row in the Schedule (Ex: Math, 10.00 - 11.00, Some Instructor, Cabinet)
     def __init__(self, id, dept, course):
@@ -89,6 +49,85 @@ class Class:
                               f'{self.meeting_time.get_id()}'
 
 
+# Schedule consists of Classes
+class Schedule:
+    def __init__(self):
+        self.data = data
+        # List of classes
+        self.classes = []
+        self.number_of_conflicts = 0
+        self.fitness = -1
+        # Total number of classes
+        self.class_numb = 0
+        self.is_fitness_changed = True
+
+    def get_classes(self) -> list[Class]:
+        self.is_fitness_changed = True
+        return self.classes
+
+    def get_number_of_conflicts(self):
+        return self.number_of_conflicts
+
+    def get_fitness(self):
+        if self.is_fitness_changed:
+            self.fitness = self.calculate_fitness()
+            self.is_fitness_changed = False
+        return self.fitness
+
+    def calculate_fitness(self):
+        self.number_of_conflicts = 0
+        # Retrieve current classes in the schedule
+        classes: [Class] = self.get_classes()
+        # For each class:
+        for class_index_1 in range(len(classes)):
+            current_class_1: Class = classes[class_index_1]
+            # Check, if max_num_of_students in the course, fits the room
+            if current_class_1.get_room().get_seating_capacity() < current_class_1.get_course().get_max_num_of_students():
+                # if not, conflicts +1
+                self.number_of_conflicts += 1
+            for class_index_2 in range(len(classes)):
+                current_class_2: Class = classes[class_index_2]
+                # Non-repeatable classes
+                if class_index_2 >= class_index_1:
+                    # Check, if meeting time of different(by id) classes is match (it's still non-conflictable)
+                    if (current_class_1.get_meeting_time() == current_class_2.get_meeting_time() and
+                            current_class_1.get_id() != current_class_2.get_id()):
+                        # Check if two classes with the same meeting time are processed in the same room
+                        if current_class_1.get_room() == current_class_2.get_room():
+                            # if so, conflict + 1
+                            self.number_of_conflicts += 1
+                        # Check if two classes with the same meeting time are processed with the same instructor
+                        if current_class_1.get_instructor() == current_class_2.get_instructor():
+                            # if so, conflict + 1
+                            self.number_of_conflicts += 1
+        return 1 / (1 * self.number_of_conflicts + 1)
+
+    def __str__(self):
+        result = ''
+        for i in range(len(self.classes) - 1):
+            result += str(self.classes[i]) + ', '
+        result += str(self.classes[len(self.classes) - 1])
+        return result
+
+    # This method is for dummy, random data. Just to set all up for algorithm
+    def initialize(self):
+        depts = self.data.get_depts()
+        for i in range(len(depts)):
+            # Courses of current department
+            courses = depts[i].get_courses()
+            for j in range(len(courses)):
+                # Create new Class (id, department, course)
+                new_class = Class(self.class_numb, depts[i], courses[j])
+                self.class_numb += 1
+                # Set initialize data, Random of the list
+                new_class.set_meeting_time(data.get_meeting_times()[random.randrange(0, len(data.get_meeting_times()))])
+                new_class.set_room(data.get_rooms()[random.randrange(0, len(data.get_rooms()))])
+                new_class.set_instructor(data.get_instructors()[random.randrange(0, len(data.get_instructors()))])
+                self.classes.append(new_class)
+        return self
+
+
+# Data retrieving
 class Data:
     # This needs to retrieve from form (PyQT5)
     # ROOMS = [['R1', 25], ['R2', 45], ['R3', 35]]
@@ -179,83 +218,7 @@ class Data:
         return self.number_of_classes
 
 
-class Schedule:
-    def __init__(self):
-        self.data = data
-        # List of classes
-        self.classes = []
-        self.number_of_conflicts = 0
-        self.fitness = -1
-        # Total number of classes
-        self.class_numb = 0
-        self.is_fitness_changed = True
-
-    def get_classes(self) -> list[Class]:
-        self.is_fitness_changed = True
-        return self.classes
-
-    def get_number_of_conflicts(self):
-        return self.number_of_conflicts
-
-    def get_fitness(self):
-        if self.is_fitness_changed:
-            self.fitness = self.calculate_fitness()
-            self.is_fitness_changed = False
-        return self.fitness
-
-    def calculate_fitness(self):
-        self.number_of_conflicts = 0
-        # Retrieve current classes in the schedule
-        classes: [Class] = self.get_classes()
-        # For each class:
-        for class_index_1 in range(len(classes)):
-            current_class_1: Class = classes[class_index_1]
-            # Check, if max_num_of_students in the course, fits the room
-            if current_class_1.get_room().get_seating_capacity() < current_class_1.get_course().get_max_num_of_students():
-                # if not, conflicts +1
-                self.number_of_conflicts += 1
-            for class_index_2 in range(len(classes)):
-                current_class_2: Class = classes[class_index_2]
-                # Non-repeatable classes
-                if class_index_2 >= class_index_1:
-                    # Check, if meeting time of different(by id) classes is match (it's still non-conflictable)
-                    if (current_class_1.get_meeting_time() == current_class_2.get_meeting_time() and
-                            current_class_1.get_id() != current_class_2.get_id()):
-                        # Check if two classes with the same meeting time are processed in the same room
-                        if current_class_1.get_room() == current_class_2.get_room():
-                            # if so, conflict + 1
-                            self.number_of_conflicts += 1
-                        # Check if two classes with the same meeting time are processed with the same instructor
-                        if current_class_1.get_instructor() == current_class_2.get_instructor():
-                            # if so, conflict + 1
-                            self.number_of_conflicts += 1
-        return 1 / (1 * self.number_of_conflicts + 1)
-
-    def __str__(self):
-        result = ''
-        for i in range(len(self.classes) - 1):
-            result += str(self.classes[i]) + ', '
-        result += str(self.classes[len(self.classes) - 1])
-        return result
-
-    # This method is for dummy, random data. Just to set all up for algorithm
-    def initialize(self):
-        depts = self.data.get_depts()
-        for i in range(len(depts)):
-            # Courses of current department
-            courses = depts[i].get_courses()
-            for j in range(len(courses)):
-                # Create new Class (id, department, course)
-                new_class = Class(self.class_numb, depts[i], courses[j])
-                self.class_numb += 1
-                # Set initialize data, Random of the list
-                new_class.set_meeting_time(data.get_meeting_times()[random.randrange(0, len(data.get_meeting_times()))])
-                new_class.set_room(data.get_rooms()[random.randrange(0, len(data.get_rooms()))])
-                new_class.set_instructor(data.get_instructors()[random.randrange(0, len(data.get_instructors()))])
-                self.classes.append(new_class)
-        return self
-
-
+# Genetic Algorithm
 class Population:
     # Here we define how many schedules will be in our population
     def __init__(self, size):
@@ -268,26 +231,62 @@ class Population:
     def get_schedules(self) -> list[Schedule]: return self.schedules
 
 
-class Algorithm:
-    pass
+# Genetic Algorithm
+class GeneticAlgorithm:
+    # Da faq is this
+    def evolve(self, pop):
+        return self.mutate_population(self.crossover_population(pop))
+
+    def crossover_population(self, pop: Population):
+        # Create Population with size 0
+        crossover_pop = Population(0)
+        for i in range(NUMB_OF_ELITE_SCHEDULES):
+            crossover_pop.get_schedules().append(pop.get_schedules()[i])
+        index = NUMB_OF_ELITE_SCHEDULES
+        while index < POPULATION_SIZE:
+            # Launch TS and pick the fittest schedule
+            schedule_1: Schedule = self.select_tournament_population(pop).get_schedules()[0]
+            # Launch TS and pick the fittest schedule
+            schedule_2: Schedule = self.select_tournament_population(pop).get_schedules()[0]
+            # Launch Crossover to this 2 schedule and append the result
+            crossover_pop.get_schedules().append(self.crossover_schedule(schedule_1, schedule_2))
+            index += 1
+
+        return crossover_pop
+
+    def mutate_population(self, pop):
+        # Skips the elite schedules and makes mutations on other schedules
+        for i in range(NUMB_OF_ELITE_SCHEDULES, POPULATION_SIZE):
+            self.mutate_schedule(pop.get_schedules()[i])
+        return pop
+
+    def crossover_schedule(self, schedule_1, schedule_2):
+        crossoverSchedule = Schedule().initialize()
+        for i in range(len(crossoverSchedule.get_classes())):
+            # With random we pick up Classes from schedule 1 or schedule 2
+            if random.random() > 0.5:
+                crossoverSchedule.get_classes()[i] = schedule_1.get_classes()[i]
+            else:
+                crossoverSchedule.get_classes()[i] = schedule_2.get_classes()[i]
+        return crossoverSchedule
+
+    def mutate_schedule(self, mutateSchedule):
+        schedule = Schedule().initialize()
+        for i in range(len(schedule.get_classes())):
+            if MUTATION_RATE > random.random(): mutateSchedule.get_classes()[i] = schedule.get_classes()[i]
+        return mutateSchedule
+
+    def select_tournament_population(self, pop) -> Population:
+        tournament_pop = Population(0)
+        index = 0
+        while index < TOURNAMENT_SELECTION_SIZE:
+            tournament_pop.get_schedules().append(pop.get_schedules()[random.randrange(0, POPULATION_SIZE)])
+            index += 1
+        tournament_pop.get_schedules().sort(key=lambda x: x.get_fitness(), reverse=True)
+        return tournament_pop
 
 
-class Department:
-    # Department - SEM, Tourism, Logistics etc.
-    def __init__(self, name, courses):
-        # Name of department
-        self.name = name
-        # Courses (by specialty)
-        self.courses = courses
-
-    def get_name(self): return self.name
-
-    def get_courses(self): return self.courses
-
-
-# Result
-
-
+# Display Manager
 class DisplayManager(object):
     def print_available_data(self):
         print('> All Available Data')
@@ -371,6 +370,7 @@ class DisplayManager(object):
         print(table)
 
 
+# Main loop
 data = Data()
 display_manager = DisplayManager()
 display_manager.print_available_data()
@@ -380,3 +380,12 @@ pp = Population(POPULATION_SIZE)
 pp.get_schedules().sort(key=lambda x: x.get_fitness(), reverse=True)
 display_manager.print_generation(pp)
 display_manager.print_schedule_as_table(pp.get_schedules()[0])
+genetic_algo = GeneticAlgorithm()
+# Algorithm
+while pp.get_schedules()[0].get_fitness() != 1.0:
+    generation_number += 1
+    print(f'\n>Generation # {str(generation_number)}')
+    pp = genetic_algo.evolve(pp)
+    pp.get_schedules().sort(key=lambda x: x.get_fitness(), reverse=True)
+    display_manager.print_generation(pp)
+    display_manager.print_schedule_as_table(pp.get_schedules()[0])
