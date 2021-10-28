@@ -1,13 +1,14 @@
 import random
 import prettytable
 import math
+import json
 
 # Helper Classes
-from sp_course import Course
-from sp_room import Room
-from sp_meeting_time import MeetingTime
-from sp_department import Department
-from sp_instructor import Instructor
+from c_course import Course
+from c_room import Room
+from c_meeting_time import MeetingTime
+from c_department import Department
+from c_instructor import Instructor
 
 # Genetic Algo Constants
 POPULATION_SIZE = 9
@@ -128,81 +129,71 @@ class Schedule:
                 # Set initialize data, Random of the list
                 new_class.set_meeting_time(data.get_meeting_times()[random.randrange(0, len(data.get_meeting_times()))])
                 new_class.set_room(data.get_rooms()[random.randrange(0, len(data.get_rooms()))])
-                new_class.set_instructor(new_class.get_course().get_instructor()[random.randrange(0, len(new_class.get_course().get_instructor()))])
+                new_class.set_instructor(new_class.get_course().get_instructors()[
+                                             random.randrange(0, len(new_class.get_course().get_instructors()))])
                 self.classes.append(new_class)
         return self
 
 
 # Data retrieving
 class Data:
-    # This needs to retrieve from form (PyQT5)
-    # ROOMS = [['R1', 25], ['R2', 45], ['R3', 35]]
-    # MEETING_TIMES = [['MT1', 'MWF 09:00 - 10:00'],
-    #                  ['MT2', 'MWF 10:00 - 11:00'],
-    #                  ['MT3', 'TTH 09:00 - 10:30'],
-    #                  ['MT4', 'TTH 10:30 - 12:00']]
-    # INSTRUCTORS = [['I1', 'Dr James Web'],
-    #                ['I2', 'Mr Mike Brown'],
-    #                ['I3', 'Dr Steve Day'],
-    #                ['I4', 'Mrs Jane Doe']]
-
-    ROOMS = [['401a', 25], ['324', 45], ['325', 35]]
-    MEETING_TIMES = [['MT1', 'MWF 09:00 - 10:00'],
-                     ['MT2', 'MWF 10:00 - 11:00'],
-                     ['MT3', 'TTH 09:00 - 10:30'],
-                     ['MT4', 'TTH 10:30 - 12:00']]
-    INSTRUCTORS = [['I1', 'Нурлан Иманмаликович'],
-                   ['I2', 'Адик'],
-                   ['I3', 'Измуханова'],
-                   ['I4', 'Кирилл']]
-
     def __init__(self):
+        # Rooms
+        self.ROOMS_JSON = list(json.load(open('d_rooms.json')))
         self.rooms = []
-        self.meeting_times = []
-        self.instructors = []
-        for i in range(len(self.ROOMS)):
+        for i in range(len(self.ROOMS_JSON)):
             # Create new room (id, number)
-            new_room = Room(self.ROOMS[i][0], self.ROOMS[i][1])
+            new_room = Room(self.ROOMS_JSON[i]['room_number'], self.ROOMS_JSON[i]['room_capacity'])
             self.rooms.append(new_room)
-        for i in range(len(self.INSTRUCTORS)):
+
+        # Instructors
+        self.INSTRUCTORS_JSON = list(json.load(open('d_instructors.json')))
+        self.instructors = []
+        for i in range(len(self.INSTRUCTORS_JSON)):
             # Create new instructor (id, name)
-            new_instructor = Instructor(self.INSTRUCTORS[i][0], self.INSTRUCTORS[i][1])
+            new_instructor = Instructor(self.INSTRUCTORS_JSON[i]['instructor_id'],
+                                        self.INSTRUCTORS_JSON[i]['instructor_name'])
             self.instructors.append(new_instructor)
-        for i in range(len(self.MEETING_TIMES)):
+
+        # Meeting Times
+        self.MEETING_TIME_JSON = list(json.load(open('d_meeting_times.json')))
+        self.meeting_times = []
+        for i in range(len(self.MEETING_TIME_JSON)):
             # Create new room (id, time)
-            new_meeting_times = MeetingTime(self.MEETING_TIMES[i][0], self.MEETING_TIMES[i][1])
+            new_meeting_times = MeetingTime(self.MEETING_TIME_JSON[i]['mt_id'], self.MEETING_TIME_JSON[i]['mt_time'])
             self.meeting_times.append(new_meeting_times)
 
-        # Create courses (number, name, instructors, max_num_of_student)
-        # course1 = Course('C1', '325K', [self.instructors[0], self.instructors[1]], 25)
-        # course2 = Course('C2', '319K', [self.instructors[0], self.instructors[1], self.instructors[2]], 35)
-        # course3 = Course('C3', '462k', [self.instructors[0], self.instructors[1]], 25)
-        # course4 = Course('C4', '464K', [self.instructors[2], self.instructors[3]], 35)
-        # course5 = Course('C5', '360C', [self.instructors[3]], 35)
-        # course6 = Course('C6', '303K', [self.instructors[0], self.instructors[2]], 45)
-        # course7 = Course('C7', '303L', [self.instructors[1], self.instructors[3]], 45)
+        # Courses
+        def set_instructor_for_course(course):
+            course['course_instructors'] = [next(filter(lambda x: x.get_id() == iid, self.instructors))
+                                            for iid in course['course_instructors_ids']]
+            return course
 
-        course1 = Course('English', '325K', [self.instructors[0], self.instructors[1]], 25)
-        course2 = Course('Math', '319K', [self.instructors[0], self.instructors[1], self.instructors[2]], 35)
-        course3 = Course('History', '462k', [self.instructors[0], self.instructors[1]], 25)
-        course4 = Course('PE', '464K', [self.instructors[2], self.instructors[3]], 35)
-        course5 = Course('Computer Science', '360C', [self.instructors[3]], 35)
-        course6 = Course('Game Development', '303K', [self.instructors[0], self.instructors[2]], 45)
-        course7 = Course('Web Development', '303L', [self.instructors[1], self.instructors[3]], 45)
+        self.COURSES_JSON = list(map(lambda crs: set_instructor_for_course(crs), json.load(open('d_courses.json'))))
+        self.courses = []
 
-        self.courses = [course1, course2, course3, course4, course5, course6, course7]
+        for i in range(len(self.COURSES_JSON)):
+            new_course = Course(self.COURSES_JSON[i]['course_number'],
+                                self.COURSES_JSON[i]['course_name'],
+                                self.COURSES_JSON[i]['course_instructors'],
+                                self.COURSES_JSON[i]['course_students'])
+            self.courses.append(new_course)
 
-        # Create Departments (name, courses)
-        # dept1 = Department('MATH', [course1, course3])
-        # dept2 = Department('MATH', [course2, course4, course5])
-        # dept3 = Department('MATH', [course6, course7])
+        # Departments
+        def set_courses_for_depts(dpt):
+            dpt['dp_courses'] = []
+            #
+            for i in self.courses:
+                for j in dpt['dp_courses_numbers']:
+                    if i.get_number() == j:
+                        dpt['dp_courses'].append(i)
+            return dpt
 
-        dept1 = Department('SEM', [course1, course3])
-        dept2 = Department('SoM', [course2, course4, course5])
-        dept3 = Department('SOL', [course6, course7])
-
-        self.depts = [dept1, dept2, dept3]
-        # Sum of courses, ex: [2,3,2] = 7
+        self.DEPARTMENTS_JSON = list(map(lambda dpt: set_courses_for_depts(dpt), json.load(open('d_departments.json'))))
+        self.depts = []
+        for i in range(len(self.DEPARTMENTS_JSON)):
+            new_dept = Department(self.DEPARTMENTS_JSON[i]['dp_name'], self.DEPARTMENTS_JSON[i]['dp_courses'])
+            self.depts.append(new_dept)
         self.number_of_classes = sum([len(self.depts[i].get_courses()) for i in range(len(self.depts))])
 
     def get_rooms(self):
@@ -298,18 +289,19 @@ class SimulatedAnneling:
         # Randomly mutate one class in the schedule
         updated_schedule = current_schedule
         updated_schedule.get_classes()
-        random_class_index = random.randint(0,len(updated_schedule.get_classes()) - 1)
+        random_class_index = random.randint(0, len(updated_schedule.get_classes()) - 1)
         # Расписание = []
         new_class = Class(random_class_index, data.get_depts()[random.randint(0, len(data.get_depts()) - 1)],
                           data.get_courses()[random.randint(0, len(data.get_courses()) - 1)])
         new_class.set_meeting_time(data.get_meeting_times()[random.randrange(0, len(data.get_meeting_times()))])
         new_class.set_room(data.get_rooms()[random.randrange(0, len(data.get_rooms()))])
         new_class.set_instructor(
-            new_class.get_course().get_instructor()[random.randrange(0, len(new_class.get_course().get_instructor()))])
+            new_class.get_course().get_instructors()[
+                random.randrange(0, len(new_class.get_course().get_instructors()))])
         updated_schedule.get_classes()[random_class_index] = new_class
         return updated_schedule
 
-    def probability_am(self, current_schedule:Schedule, update_schedule:Schedule) -> Schedule:
+    def probability_am(self, current_schedule: Schedule, update_schedule: Schedule) -> Schedule:
         random_num = random.randint(0, 100)
         # {1 ; 0} = 0.1, 0.2
         # .1 - .5 = .4
@@ -355,7 +347,7 @@ class DisplayManager(object):
             ['id', 'course #', 'max # of students', 'instructors'])
         courses = data.get_courses()
         for i in range(len(courses)):
-            instructors: list[Instructor] = courses[i].get_instructor()
+            instructors: list[Instructor] = courses[i].get_instructors()
             temp_str = ''
             for j in range(len(instructors) - 1):
                 temp_str += instructors[j].__str__() + ', '

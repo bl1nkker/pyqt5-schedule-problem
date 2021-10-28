@@ -1,0 +1,18 @@
+[
+  {
+    "instructor_id":"I1",
+    "instructor_name": "Nugumanov"
+  },
+  {
+    "instructor_id":"I2",
+    "instructor_name": "Adik"
+  },
+  {
+    "instructor_id":"I3",
+    "instructor_name": "Izmukhanova"
+  },
+  {
+    "instructor_id":"I4",
+    "instructor_name": "Yakunin"
+  }
+]

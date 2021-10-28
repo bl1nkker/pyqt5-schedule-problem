@@ -1,0 +1,39 @@
+[
+  {
+    "course_number":"325K",
+    "course_name": "English",
+    "course_instructors_ids": ["I1", "I2"],
+    "course_students": 25
+  },
+  {
+    "course_number":"319K",
+    "course_name": "History",
+    "course_instructors_ids": ["I1", "I2", "I3"],
+    "course_students": 35
+  },
+  {
+    "course_number":"462k",
+    "course_name": "PE",
+    "course_instructors_ids": ["I3", "I4"],
+    "course_students": 35
+  },
+  {
+    "course_number":"360C",
+    "course_name": "Computer Science",
+    "course_instructors_ids": ["I4"],
+    "course_students": 35
+  },
+  {
+    "course_number":"303K",
+    "course_name": "Game Development",
+    "course_instructors_ids": ["I1", "I3"],
+    "course_students": 45
+  },
+  {
+    "course_number":"303L",
+    "course_name": "Web Development",
+    "course_instructors_ids": ["I1", "I4"],
+    "course_students": 45
+  }
+
+]
