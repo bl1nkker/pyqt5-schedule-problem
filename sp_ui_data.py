@@ -9,9 +9,16 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from sp_ui_result import Result_Ui_MainWindow
 
 
 class Data_Ui_MainWindow(object):
+    def __init__(self, result_schedule):
+        self.result_schedule = result_schedule
+        self.cashWindow = QtWidgets.QMainWindow()
+        self.cashwin = Result_Ui_MainWindow()
+        self.cashwin.setupUi(self.cashWindow, schedule=self.result_schedule)
+
     def setupUi(self, MainWindow, depts, mts, rooms, instructors, courses):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(743, 600)
@@ -181,6 +188,16 @@ class Data_Ui_MainWindow(object):
         self.horizontalLayout_2.addLayout(self.verticalLayout)
         self.horizontalLayout_2.setStretch(0, 1)
         self.verticalLayout_6.addLayout(self.horizontalLayout_2)
+
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.create_button = QtWidgets.QPushButton(self.centralwidget)
+        self.create_button.setObjectName("create_button")
+        self.horizontalLayout_6.addWidget(self.create_button)
+        self.verticalLayout_6.addLayout(self.horizontalLayout_6)
+
+        self.create_button.clicked.connect(self.openWindow)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 743, 21))
@@ -192,6 +209,9 @@ class Data_Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def openWindow(self):
+        self.cashWindow.show()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -226,5 +246,4 @@ class Data_Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Department"))
         item = self.dept_table.horizontalHeaderItem(1)
         item.setText(_translate("MainWindow", "Courses"))
-
-
+        self.create_button.setText(_translate("MainWindow", "Create Schedule"))

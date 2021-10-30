@@ -2,6 +2,7 @@ import random
 import prettytable
 import math
 import json
+import sys
 from PyQt5 import QtWidgets
 
 # Helper Classes
@@ -12,6 +13,7 @@ from c_department import Department
 from c_instructor import Instructor
 # UI
 from sp_ui_data import Data_Ui_MainWindow
+from sp_ui_result import Result_Ui_MainWindow
 
 # Genetic Algo Constants
 POPULATION_SIZE = 9
@@ -406,24 +408,11 @@ class DisplayManager(object):
                            ])
         print(table)
 
-
 # Main loop
 data = Data()
 display_manager = DisplayManager()
 display_manager.print_available_data()
 generation_number = 0
-
-# UI Building
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Data_Ui_MainWindow()
-    ui.setupUi(MainWindow, depts=data.get_depts(), mts=data.get_meeting_times(), instructors=data.get_instructors(),
-               courses=data.get_courses(), rooms=data.get_rooms())
-    MainWindow.show()
-    sys.exit(app.exec_())
 
 # Genetic Algorithm
 print(f'\n> Generation # {generation_number}')
@@ -434,6 +423,11 @@ display_manager.print_schedule_as_table(pp.get_schedules()[0])
 
 display_manager.print_schedule_as_table(pp.get_schedules()[0])
 genetic_algo = GeneticAlgorithm()
+cur_schedule = Schedule().initialize()
+simulated_ann = SimulatedAnneling()
+am_current_schedule = None
+ga_current_schedule = None
+
 # while pp.get_schedules()[0].get_fitness() != 1.0:
 #
 #     generation_number += 1
@@ -441,16 +435,24 @@ genetic_algo = GeneticAlgorithm()
 #     pp = genetic_algo.evolve(pp)
 #     pp.get_schedules().sort(key=lambda x: x.get_fitness(), reverse=True)
 #     display_manager.print_generation(pp)
-#     display_manager.print_schedule_as_table(pp.get_schedules()[0])
+#     ga_current_schedule = pp.get_schedules()[0]
+#     display_manager.print_schedule_as_table(ga_current_schedule)
 
 # Annealing Method
-cur_schedule = Schedule().initialize()
-simulated_ann = SimulatedAnneling()
+while cur_schedule.get_fitness() != 1.0:
+    generation_number += 1
+    new_schedule = simulated_ann.mutate_schedule(cur_schedule)
+    cur_schedule = simulated_ann.probability_am(cur_schedule, new_schedule)
+    TEMPERATURE *= ALPHA
+    print(f'\n>Generation # {str(generation_number)}, with fitness: {cur_schedule.get_fitness()}')
+    am_current_schedule = cur_schedule
+    display_manager.print_schedule_as_table(am_current_schedule)
 
-# while cur_schedule.get_fitness() != 1.0:
-#     generation_number += 1
-#     new_schedule = simulated_ann.mutate_schedule(cur_schedule)
-#     cur_schedule = simulated_ann.probability_am(cur_schedule, new_schedule)
-#     TEMPERATURE *= ALPHA
-#     print(f'\n>Generation # {str(generation_number)}, with fitness: {cur_schedule.get_fitness()}')
-#     display_manager.print_schedule_as_table(cur_schedule)
+# UI Building
+app = QtWidgets.QApplication(sys.argv)
+MainWindow = QtWidgets.QMainWindow()
+ui = Data_Ui_MainWindow(result_schedule=am_current_schedule if am_current_schedule is not None else ga_current_schedule)
+ui.setupUi(MainWindow, depts=data.get_depts(), mts=data.get_meeting_times(), instructors=data.get_instructors(),
+           courses=data.get_courses(), rooms=data.get_rooms())
+MainWindow.show()
+sys.exit(app.exec_())
