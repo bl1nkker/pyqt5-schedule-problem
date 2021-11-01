@@ -1,38 +1,56 @@
 [
   {
     "course_number":"325K",
-    "course_name": "English",
-    "course_instructors_ids": ["I1", "I2"],
+    "course_name": "Business English",
+    "course_instructors_ids": ["I3", "I2", "I4"],
+    "course_students": 45
+  },
+  {
+    "course_number":"326K",
+    "course_name": "Professional Oriented English",
+    "course_instructors_ids": ["I3", "I2"],
+    "course_students": 30
+  },
+  {
+    "course_number":"416K",
+    "course_name": "Web Development",
+    "course_instructors_ids": ["I2", "I5"],
+    "course_students": 10
+  },
+  {
+    "course_number":"417K",
+    "course_name": "Data Science",
+    "course_instructors_ids": ["I4", "I1"],
+    "course_students": 10
+  },
+  {
+    "course_number":"428K",
+    "course_name": "History",
+    "course_instructors_ids": ["I1", "I6", "I8"],
+    "course_students": 45
+  },
+  {
+    "course_number":"429K",
+    "course_name": "Global Law",
+    "course_instructors_ids": ["I6", "I7"],
+    "course_students": 45
+  },
+  {
+    "course_number":"362K",
+    "course_name": "PE",
+    "course_instructors_ids": ["I8"],
     "course_students": 25
   },
   {
-    "course_number":"319K",
-    "course_name": "History",
-    "course_instructors_ids": ["I1", "I2", "I3"],
-    "course_students": 35
-  },
-  {
-    "course_number":"462k",
-    "course_name": "PE",
-    "course_instructors_ids": ["I3", "I4"],
-    "course_students": 35
-  },
-  {
     "course_number":"360C",
-    "course_name": "Computer Science",
-    "course_instructors_ids": ["I4"],
+    "course_name": "Marketing",
+    "course_instructors_ids": ["I6", "I7"],
     "course_students": 35
   },
   {
     "course_number":"303K",
-    "course_name": "Game Development",
-    "course_instructors_ids": ["I1", "I3"],
-    "course_students": 45
-  },
-  {
-    "course_number":"303L",
-    "course_name": "Web Development",
-    "course_instructors_ids": ["I1", "I4"],
+    "course_name": "Business Canvas",
+    "course_instructors_ids": ["I4", "I5", "I6", "I7"],
     "course_students": 45
   }
 

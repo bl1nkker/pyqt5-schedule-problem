@@ -17,6 +17,13 @@
    <layout class="QVBoxLayout" name="verticalLayout_6">
     <item>
      <widget class="QLabel" name="label_6">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
       <property name="text">
        <string>Available Data</string>
       </property>

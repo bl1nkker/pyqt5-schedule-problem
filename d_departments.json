@@ -1,14 +1,14 @@
 [
   {
     "dp_name": "SEM",
-    "dp_courses_numbers": ["325K", "462k"]
+    "dp_courses_numbers": ["325K", "326K", "416K", "417K", "362K"]
   },
   {
-    "dp_name": "SOL",
-    "dp_courses_numbers": ["319K", "464K", "360C"]
+    "dp_name": "School of Law",
+    "dp_courses_numbers": ["325K", "326K", "429K", "428K"]
   },
   {
-    "dp_name": "SEA",
-    "dp_courses_numbers": ["303K", "303L"]
+    "dp_name": "School of Marketing",
+    "dp_courses_numbers": ["325K", "326K", "362K"]
   }
 ]

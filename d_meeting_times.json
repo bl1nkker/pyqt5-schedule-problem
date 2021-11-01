@@ -1,18 +1,63 @@
 [
   {
-    "mt_id":"MT1",
-    "mt_time": "MWF 09:00 - 10:00"
+    "mt_id":"mt_mon_1",
+    "mt_time": "Monday 09:00 - 12:00"
   },
   {
-    "mt_id":"MT2",
-    "mt_time": "MWF 10:00 - 11:00"
+    "mt_id":"mt_mon_2",
+    "mt_time": "Monday 12:10 - 15:10"
   },
   {
-    "mt_id":"MT3",
-    "mt_time": "TH 09:00 - 10:30"
+    "mt_id":"mt_mon_3",
+    "mt_time": "Monday 15:30 - 18:30"
   },
   {
-    "mt_id":"MT4",
-    "mt_time": "TTH 10:30 - 12:00"
+    "mt_id":"mt_tue_1",
+    "mt_time": "Tuesday 09:00 - 12:00"
+  },
+  {
+    "mt_id":"mt_tue_2",
+    "mt_time": "Tuesday 12:10 - 15:10"
+  },
+  {
+    "mt_id":"mt_tue_3",
+    "mt_time": "Tuesday 15:30 - 18:30"
+  },
+  {
+    "mt_id":"mt_wed_1",
+    "mt_time": "Wednesday 09:00 - 12:00"
+  },
+  {
+    "mt_id":"mt_wed_2",
+    "mt_time": "Wednesday 12:10 - 15:10"
+  },
+  {
+    "mt_id":"mt_wed_3",
+    "mt_time": "Wednesday 15:30 - 18:30"
+  },
+  {
+    "mt_id":"mt_thur_1",
+    "mt_time": "Thursday 09:00 - 12:00"
+  },
+  {
+    "mt_id":"mt_thur_2",
+    "mt_time": "Thursday 12:10 - 15:10"
+  },
+  {
+    "mt_id":"mt_thur_3",
+    "mt_time": "Thursday 15:30 - 18:30"
+  },
+  {
+    "mt_id":"mt_fri_1",
+    "mt_time": "Friday 09:00 - 12:00"
+  },
+  {
+    "mt_id":"mt_fri_2",
+    "mt_time": "Friday 12:10 - 15:10"
+  },
+  {
+    "mt_id":"mt_fri_3",
+    "mt_time": "Friday 15:30 - 18:30"
   }
+
 ]

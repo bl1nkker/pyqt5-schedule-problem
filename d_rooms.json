@@ -8,7 +8,31 @@
     "room_capacity": 45
   },
   {
-    "room_number":"325",
-    "room_capacity": 35
+    "room_number":"211",
+    "room_capacity": 45
+  },
+  {
+    "room_number":"322",
+    "room_capacity": 20
+  },
+  {
+    "room_number":"228",
+    "room_capacity": 30
+  },
+  {
+    "room_number":"410b",
+    "room_capacity": 20
+  },
+  {
+    "room_number":"409b",
+    "room_capacity": 50
+  },
+  {
+    "room_number":"408b",
+    "room_capacity": 45
+  },
+  {
+    "room_number":"407b",
+    "room_capacity": 45
   }
 ]

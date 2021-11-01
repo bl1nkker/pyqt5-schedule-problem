@@ -1,18 +1,34 @@
 [
   {
     "instructor_id":"I1",
-    "instructor_name": "Nugumanov"
+    "instructor_name": "Nugumanov Nurlan"
   },
   {
     "instructor_id":"I2",
-    "instructor_name": "Adik"
+    "instructor_name": "Korabayev Abdikali"
   },
   {
     "instructor_id":"I3",
-    "instructor_name": "Izmukhanova"
+    "instructor_name": "Kairzhanova Asem"
   },
   {
     "instructor_id":"I4",
-    "instructor_name": "Yakunin"
+    "instructor_name": "Yakunin Kirill"
+  },
+  {
+    "instructor_id":"I5",
+    "instructor_name": "Ramazanov Ermek"
+  },
+  {
+    "instructor_id":"I6",
+    "instructor_name": "Muhsyinov Aibol"
+  },
+  {
+    "instructor_id":"I7",
+    "instructor_name": "Koroleva Natalya"
+  },
+  {
+    "instructor_id":"I8",
+    "instructor_name": "Stepanovich Vladimir"
   }
 ]
